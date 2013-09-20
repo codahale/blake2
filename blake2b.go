@@ -47,12 +47,15 @@ func (d *digest) Size() int {
 
 func (d *digest) Reset() {
 	d.state = new(C.blake2b_state)
+	l := C.uint8_t(d.Size())
 	if len(d.key) == 0 {
-		if C.blake2b_init(d.state, C.uint8_t(d.Size())) < 0 {
+		if C.blake2b_init(d.state, l) < 0 {
 			panic("blake2: unable to reset")
 		}
 	} else {
-		if C.blake2b_init_key(d.state, C.uint8_t(d.Size()), unsafe.Pointer(&d.key[0]), C.uint8_t(len(d.key))) < 0 {
+		key := unsafe.Pointer(&d.key[0])
+		keyLen := C.uint8_t(len(d.key))
+		if C.blake2b_init_key(d.state, l, key, keyLen) < 0 {
 			panic("blake2: unable to reset")
 		}
 	}
