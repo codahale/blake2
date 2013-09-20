@@ -66,8 +66,7 @@ func (d *digest) Sum(buf []byte) []byte {
 
 func (d *digest) Write(buf []byte) (int, error) {
 	if len(buf) > 0 {
-		c := &buf[0]
-		C.blake2b_update(d.state, (*C.uint8_t)(c), C.uint64_t(len(buf)))
+		C.blake2b_update(d.state, (*C.uint8_t)(&buf[0]), C.uint64_t(len(buf)))
 	}
 	return len(buf), nil
 }
