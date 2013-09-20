@@ -3,10 +3,10 @@ package blake2
 import (
 	"crypto/md5"
 	"crypto/sha1"
+	"crypto/sha256"
 	"crypto/sha512"
 	"hash"
 	"testing"
-	"crypto/sha256"
 )
 
 func benchmarkHash(b *testing.B, hash func() hash.Hash) {
@@ -36,7 +36,6 @@ func BenchmarkSHA1(b *testing.B) {
 func BenchmarkSHA256(b *testing.B) {
 	benchmarkHash(b, sha256.New)
 }
-
 
 func BenchmarkSHA512(b *testing.B) {
 	benchmarkHash(b, sha512.New)
