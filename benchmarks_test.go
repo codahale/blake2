@@ -8,9 +8,8 @@ import (
 	"testing"
 )
 
-// timings are all per-MiB
-
 func benchmarkHash(b *testing.B, hash func() hash.Hash) {
+	b.SetBytes(1024 * 1024)
 	data := make([]byte, 1024)
 	for i := 0; i < b.N; i++ {
 		h := hash()
