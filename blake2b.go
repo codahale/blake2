@@ -59,14 +59,9 @@ func (d *digest) Reset() {
 }
 
 func (d *digest) Sum(buf []byte) []byte {
-	digest := make([]C.uint8_t, d.Size())
-	C.blake2b_final(d.state, &digest[0], C.uint8_t(d.Size()))
-
-	for _, v := range digest {
-		buf = append(buf, byte(v))
-	}
-
-	return buf
+	digest := make([]byte, d.Size())
+	C.blake2b_final(d.state, (*C.uint8_t)(&digest[0]), C.uint8_t(d.Size()))
+	return append(buf, digest...)
 }
 
 func (d *digest) Write(buf []byte) (int, error) {
