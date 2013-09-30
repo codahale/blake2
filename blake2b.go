@@ -1,4 +1,4 @@
-// Package blake2 provides an optimized Go wrapper around the public domain
+// Package blake2 provides a Go wrapper around an optimized, public domain
 // implementation of BLAKE2.
 // The cryptographic hash function BLAKE2 is an improved version of the SHA-3
 // finalist BLAKE. Like BLAKE or SHA-3, BLAKE2 offers the highest security, yet
