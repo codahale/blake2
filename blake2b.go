@@ -21,6 +21,11 @@ type digest struct {
 	isLastNode bool
 }
 
+const (
+	SaltSize     = C.BLAKE2B_SALTBYTES
+	PersonalSize = C.BLAKE2B_PERSONALBYTES
+)
+
 // Tree contains parameters for tree hashing. Each node in the tree
 // can be hashed concurrently, and incremental changes can be done in
 // a Merkle tree fashion.
