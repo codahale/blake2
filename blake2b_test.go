@@ -542,6 +542,56 @@ func TestBlake2B(t *testing.T) {
 	}
 }
 
+func ExampleNew() {
+	h := New(nil)
+	h.Write([]byte("one two three"))
+	d := h.Sum(nil)
+	fmt.Printf("%X", d)
+	// Output:
+	// 5BD2901E0955770DE513E3C2397F3B7594E6BCF21F61708DF64AAECCD6BC2BE6EAE0A2CA524CCB2A7F054464B07472B9E130966D3CE4B1870E02DA788C4E33BE
+}
+
+func ExampleNew_short() {
+	h := New(&Config{Size: 32})
+	h.Write([]byte("one two three"))
+	d := h.Sum(nil)
+	fmt.Printf("%X", d)
+	// Output:
+	// 4BBA13CA5E6C7347347A331F69CCB09872E873E9FB415A2387B025712F68844B
+}
+
+func ExampleNew_personalized() {
+	h := New(&Config{
+		Key:      []byte("sekrit"),
+		Salt:     []byte("random but public"),
+		Personal: []byte("myAppName"),
+	})
+	h.Write([]byte("one two three"))
+	d := h.Sum(nil)
+	fmt.Printf("%X", d)
+	// Output:
+	// FE995AB57D24D0A0DB081BB8C1E1EB69F46A3CE5AC97FD463837C5FCAA18080688C7389449692F32D6FD53C6B7A475E52AFF5C3FBDCD253715C4F8D1333068C5
+}
+
+func ExampleNew_treehash() {
+	h := New(&Config{
+		Tree: &Tree{
+			Fanout:        64,
+			MaxDepth:      8,
+			LeafSize:      65536,
+			InnerHashSize: 32,
+			NodeDepth:     3,
+			NodeOffset:    23,
+			IsLastNode:    true,
+		},
+	})
+	h.Write([]byte("one two three"))
+	d := h.Sum(nil)
+	fmt.Printf("%X", d)
+	// Output:
+	// E86CF85D23FF3E33CCBC37F37B3A8EAE0FAE26E763FB5253F3D740DF823D47AB1273D6FFC53AD8FB15F3153F3E9F92974510975AE08ED311C68D3E4C0A3B21A6
+}
+
 func ExampleNewBlake2B() {
 	h := NewBlake2B()
 	h.Write([]byte("one two three"))

@@ -247,6 +247,27 @@ int blake2b_init_key( blake2b_state *S, const uint8_t outlen, const void *key, c
   return 0;
 }
 
+int blake2b_init_parametrized( blake2b_state *S, const blake2b_param *P, const void *key )
+{
+  if ( ( !P->digest_length ) || ( P->digest_length > BLAKE2B_OUTBYTES ) ) return -1;
+
+  if ( P->key_length > BLAKE2B_KEYBYTES ) return -1;
+
+  if( blake2b_init_param( S, P ) < 0 )
+    return 0;
+
+  if (P->key_length > 0)
+  {
+    uint8_t block[BLAKE2B_BLOCKBYTES];
+    memset( block, 0, BLAKE2B_BLOCKBYTES );
+    memcpy( block, key, P->key_length );
+    blake2b_update( S, block, BLAKE2B_BLOCKBYTES );
+    secure_zero_memory( block, BLAKE2B_BLOCKBYTES ); /* Burn the key from stack */
+  }
+  return 0;
+}
+
+
 static inline int blake2b_compress( blake2b_state *S, const uint8_t block[BLAKE2B_BLOCKBYTES] )
 {
   __m128i row1l, row1h;
