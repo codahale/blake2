@@ -150,7 +150,9 @@ func (d *digest) Reset() {
 
 func (d *digest) Sum(buf []byte) []byte {
 	digest := make([]byte, d.Size())
-	C.blake2b_final(d.state, (*C.uint8_t)(&digest[0]), C.uint8_t(d.Size()))
+	// Make a copy of d.state so that caller can keep writing and summing.
+	s := *d.state
+	C.blake2b_final(&s, (*C.uint8_t)(&digest[0]), C.uint8_t(d.Size()))
 	return append(buf, digest...)
 }
 
