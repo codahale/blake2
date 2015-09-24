@@ -554,6 +554,18 @@ func TestSumState(t *testing.T) {
 	}
 }
 
+func TestReset(t *testing.T) {
+	h := New(nil)
+	h.Write([]byte("foo"))
+	s1 := h.Sum(nil)
+	h.Reset()
+	h.Write([]byte("foo"))
+	s2 := h.Sum(nil)
+	if !bytes.Equal(s1, s2) {
+		t.Error("sum values unequal after reset")
+	}
+}
+
 func ExampleNew() {
 	h := New(nil)
 	h.Write([]byte("one two three"))
