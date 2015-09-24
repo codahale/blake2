@@ -1,6 +1,7 @@
 package blake2
 
 import (
+	"bytes"
 	"fmt"
 	"testing"
 )
@@ -539,6 +540,29 @@ func TestBlake2B(t *testing.T) {
 		if actual != expected {
 			t.Errorf("bad hash (%d): input=%X, expected=%X, actual=%s", len, input, expected, actual)
 		}
+	}
+}
+
+func TestSumState(t *testing.T) {
+	h := New(nil)
+	// Sum should not modify its internal state; so
+	// it should return the same value twice in a row.
+	s1 := h.Sum(nil)
+	s2 := h.Sum(nil)
+	if !bytes.Equal(s1, s2) {
+		t.Error("consecutive sum values unequal")
+	}
+}
+
+func TestReset(t *testing.T) {
+	h := New(nil)
+	h.Write([]byte("foo"))
+	s1 := h.Sum(nil)
+	h.Reset()
+	h.Write([]byte("foo"))
+	s2 := h.Sum(nil)
+	if !bytes.Equal(s1, s2) {
+		t.Error("sum values unequal after reset")
 	}
 }
 

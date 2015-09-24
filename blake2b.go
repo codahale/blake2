@@ -15,7 +15,7 @@ import (
 )
 
 type digest struct {
-	state      *C.blake2b_state
+	state      C.blake2b_state
 	key        []byte
 	param      C.blake2b_param
 	isLastNode bool
@@ -135,12 +135,11 @@ func (d *digest) Size() int {
 }
 
 func (d *digest) Reset() {
-	d.state = new(C.blake2b_state)
 	var key unsafe.Pointer
 	if d.param.key_length > 0 {
 		key = unsafe.Pointer(&d.key[0])
 	}
-	if C.blake2b_init_parametrized(d.state, &d.param, key) < 0 {
+	if C.blake2b_init_parametrized(&d.state, &d.param, key) < 0 {
 		panic("blake2: unable to reset")
 	}
 	if d.isLastNode {
@@ -150,13 +149,15 @@ func (d *digest) Reset() {
 
 func (d *digest) Sum(buf []byte) []byte {
 	digest := make([]byte, d.Size())
-	C.blake2b_final(d.state, (*C.uint8_t)(&digest[0]), C.uint8_t(d.Size()))
+	// Make a copy of d.state so that caller can keep writing and summing.
+	s := d.state
+	C.blake2b_final(&s, (*C.uint8_t)(&digest[0]), C.uint8_t(d.Size()))
 	return append(buf, digest...)
 }
 
 func (d *digest) Write(buf []byte) (int, error) {
 	if len(buf) > 0 {
-		C.blake2b_update(d.state, (*C.uint8_t)(&buf[0]), C.uint64_t(len(buf)))
+		C.blake2b_update(&d.state, (*C.uint8_t)(&buf[0]), C.uint64_t(len(buf)))
 	}
 	return len(buf), nil
 }
