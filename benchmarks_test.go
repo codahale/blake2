@@ -6,6 +6,8 @@ import (
 	"crypto/sha256"
 	"crypto/sha512"
 	"hash"
+	"hash/crc32"
+	"hash/crc64"
 	"testing"
 )
 
@@ -39,4 +41,17 @@ func BenchmarkSHA256(b *testing.B) {
 
 func BenchmarkSHA512(b *testing.B) {
 	benchmarkHash(b, sha512.New)
+}
+
+func BenchmarkCRC32(b *testing.B) {
+	benchmarkHash(b, func() hash.Hash {
+		return crc32.NewIEEE()
+	})
+}
+
+func BenchmarkCRC64(b *testing.B) {
+	table := crc64.MakeTable(crc64.ISO)
+	benchmarkHash(b, func() hash.Hash {
+		return crc64.New(table)
+	})
 }
